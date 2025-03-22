@@ -75,6 +75,7 @@
             flex-wrap: wrap;
             justify-content: center;
             margin-bottom: 20px;
+            position: relative; /* Untuk positioning animasi */
         }
 
         #pilihanGanda button {
@@ -94,6 +95,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative; /* Untuk animasi di samping */
         }
 
         #pilihanGanda button:hover {
@@ -114,6 +116,13 @@
             50% { transform: translateX(5px); }
             75% { transform: translateX(-5px); }
             100% { transform: translateX(0); }
+        }
+
+        #correctAnimation {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            display: none;
         }
 
         #hasil {
@@ -188,6 +197,10 @@
                 width: 30px;
                 height: 30px;
             }
+            #correctAnimation {
+                width: 40px;
+                height: 40px;
+            }
         }
 
         @media (max-width: 600px) {
@@ -202,12 +215,16 @@
                 width: 25px;
                 height: 25px;
             }
+            #correctAnimation {
+                width: 30px;
+                height: 30px;
+            }
         }
         #skor {
             position: absolute;
-            top: 10px;
+            bottom: 10px; /* Dipindah ke kanan bawah */
             right: 10px;
-            font-size: 20px;
+            font-size: 10px; /* Dikecilkan menjadi setengah dari 20px */
             font-weight: bold;
             color: #333;
         }
@@ -291,6 +308,7 @@
             <button id="pilihanB"></button>
             <button id="pilihanC"></button>
             <button id="pilihanD"></button>
+            <img id="correctAnimation" src="correct.gif" alt="Correct Animation">
         </div>
         <p id="hasil"></p>
         <div class="fireworks"></div>
@@ -422,7 +440,7 @@
         let isStartSoundPlayed = false;
         let timerInterval = null;
         let timeLeft = 120; // 2 menit dalam detik
-        let isGameOverSoundPlayed = false; // Kontrol suara alhamdulillah
+        let isGameOverSoundPlayed = false;
 
         // Fungsi untuk memainkan suara
         function playSound(type) {
@@ -435,7 +453,7 @@
             } else if (type === 'gameover' && !isGameOverSoundPlayed) {
                 const audio = new Audio('alhamdulillah.mp3');
                 audio.play();
-                isGameOverSoundPlayed = true; // Pastikan hanya diputar sekali
+                isGameOverSoundPlayed = true;
             } else if (type === 'start' && !isStartSoundPlayed) {
                 const audio = new Audio('ping.wav');
                 audio.play();
@@ -452,7 +470,7 @@
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
                 timerInterval = null;
-                skorSalah += (totalSoal - (skorBenar + skorSalah)); // Soal yang belum dijawab dianggap salah
+                skorSalah += (totalSoal - (skorBenar + skorSalah));
                 akhirPermainan();
             }
             timeLeft--;
@@ -468,9 +486,8 @@
             gameArea.classList.add("popup-animation");
             playSound('start');
 
-            // Mulai timer hanya jika belum berjalan
             if (!timerInterval) {
-                timeLeft = 120; // Inisialisasi timer hanya sekali
+                timeLeft = 120;
                 updateTimer();
                 timerInterval = setInterval(updateTimer, 1000);
             }
@@ -516,6 +533,12 @@
                 };
                 pilihanContainer.appendChild(button);
             }
+            const correctAnimation = document.createElement("img");
+            correctAnimation.id = "correctAnimation";
+            correctAnimation.src = "correct.gif";
+            correctAnimation.alt = "Correct Animation";
+            pilihanContainer.appendChild(correctAnimation);
+
             document.getElementById("hasil").textContent = "";
             resetPilihan();
 
@@ -526,7 +549,7 @@
         function cekJawaban(jawabanYangDipilih, buttonElement) {
             if (jawabanYangDipilih === soalSaatIni.jawaban) {
                 document.getElementById("hasil").textContent = "Benar!";
-                triggerFireworks();
+                showCorrectAnimation(buttonElement);
                 playSound('success');
                 jawabanBenar = true;
                 skorBenar++;
@@ -566,31 +589,19 @@
                 button.classList.remove("salah");
                 button.style.animationPlayState = 'paused';
             });
+            document.getElementById("correctAnimation").style.display = "none";
         }
 
-        function triggerFireworks() {
-            const container = document.querySelector(".fireworks");
-            const count = 20;
-
-            for (let i = 0; i < count; i++) {
-                const firework = document.createElement("div");
-                firework.classList.add("firework");
-                const x = Math.random() * window.innerWidth - 100;
-                const y = Math.random() * window.innerHeight - 100;
-                const dx = Math.random() * 200 - 100;
-                const dy = Math.random() * 200 - 100;
-
-                firework.style.setProperty("--x", `${dx}px`);
-                firework.style.setProperty("--y", `${dy}px`);
-                firework.style.left = `${x}px`;
-                firework.style.top = `${y}px`;
-
-                container.appendChild(firework);
-            }
-
+        function showCorrectAnimation(buttonElement) {
+            const correctAnimation = document.getElementById("correctAnimation");
+            const buttonRect = buttonElement.getBoundingClientRect();
+            const containerRect = document.getElementById("pilihanGanda").getBoundingClientRect();
+            correctAnimation.style.display = "block";
+            correctAnimation.style.left = `${buttonRect.right - containerRect.left + 10}px`; // 10px margin kanan
+            correctAnimation.style.top = `${buttonRect.top - containerRect.top + (buttonRect.height - 50) / 2}px`; // Posisi vertikal tengah
             setTimeout(() => {
-                container.innerHTML = "";
-            }, 2000);
+                correctAnimation.style.display = "none";
+            }, 2000); // Sesuai waktu transisi ke soal berikutnya
         }
 
         function akhirPermainan() {
@@ -617,7 +628,7 @@
             document.getElementById("pilihanGanda").innerHTML = "";
             document.getElementById("hasil").textContent = "";
             document.getElementById("timerContainer").style.display = "none";
-            playSound('gameover'); // Suara hanya diputar sekali di sini
+            playSound('gameover');
         }
 
         document.getElementById("startButton").addEventListener("click", mulaiPermainan);
