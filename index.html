@@ -19,7 +19,7 @@
             padding: 0;
             width: 100%;
             overflow-x: hidden;
-            position: relative; /* Ditambahkan untuk mendukung positioning copyright */
+            position: relative;
         }
 
         #gameArea {
@@ -233,8 +233,8 @@
 
         #copyright {
             position: absolute;
-            top: 10px; /* Dipindahkan ke atas */
-            right: 10px; /* Tetap di kanan */
+            top: 10px;
+            right: 10px;
             font-family: 'Kanit', sans-serif;
             font-size: 14px;
             color: #F5E8C7; /* Krem, kontras dengan background hijau tua */
@@ -273,7 +273,7 @@
                 kategori: "ramadhan"
             },
             {
-                deskripsi: "Siapa nama kakek Mbah Kaum Ridwan: Hasan Besari atau H. Ibrahim?",
+                deskripsi: "Siapa nama kakek Mbah Kaum Ridwan?", // Redaksi diubah
                 jawaban: "H. Ibrahim",
                 pilihan: ["H. Ibrahim", "Hasan Besari", "Ahmad Pandi", "Murdhi"],
                 judul: "Kuis Ramadhan",
@@ -393,7 +393,7 @@
                 const audio = new Audio('gameover.wav');
                 audio.play();
             } else if (type === 'gameover') {
-                const audio = new Audio('gameover.wav');
+                const audio = new Audio('alhamdulillah.mp3'); // Diubah menjadi alhamdulillah.mp3
                 audio.play();
             } else if (type === 'start' && !isStartSoundPlayed) {
                 const audio = new Audio('ping.wav');
@@ -545,7 +545,7 @@
             `;
             document.getElementById("pilihanGanda").innerHTML = "";
             document.getElementById("hasil").textContent = "";
-            playSound('gameover');
+            playSound('gameover'); // Memainkan alhamdulillah.mp3
         }
 
         document.getElementById("startButton").addEventListener("click", mulaiPermainan);
