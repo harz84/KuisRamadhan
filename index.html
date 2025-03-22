@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kuis Ramadhan</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Signika:wght@400;700&family=Kanit&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Signika:wght@400;700&family=Kanit&family=Acme&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <script src="https://unpkg.com/tone"></script>
     <style>
@@ -32,6 +32,25 @@
             width: 95%;
             box-sizing: border-box;
             position: relative;
+        }
+
+        #timerContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        #timerIcon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        #timer {
+            font-family: 'Acme', sans-serif;
+            font-size: 40px;
+            color: #2E4A47; /* Hijau Gelap */
         }
 
         #judulGame {
@@ -162,12 +181,26 @@
             #hasil {
                 font-size: 20px;
             }
+            #timer {
+                font-size: 30px;
+            }
+            #timerIcon {
+                width: 30px;
+                height: 30px;
+            }
         }
 
         @media (max-width: 600px) {
             #pilihanGanda button {
                 flex: 1 1 100%;
                 margin: 8px 0;
+            }
+            #timer {
+                font-size: 25px;
+            }
+            #timerIcon {
+                width: 25px;
+                height: 25px;
             }
         }
         #skor {
@@ -243,6 +276,10 @@
 </head>
 <body>
     <div id="gameArea">
+        <div id="timerContainer" style="display: none;">
+            <img id="timerIcon" src="https://img.icons8.com/ios-filled/50/2E4A47/hourglass.png" alt="Hourglass">
+            <span id="timer">02:00</span>
+        </div>
         <h1 id="judulGame">Kuis Ramadhan</h1>
         <p id="petunjuk">Selamat datang di Kuis Ramadhan!</p>
         <div id="startScreen">
@@ -273,7 +310,7 @@
                 kategori: "ramadhan"
             },
             {
-                deskripsi: "Siapa nama kakek Mbah Kaum Ridwan?", // Redaksi diubah
+                deskripsi: "Siapa nama kakek Mbah Kaum Ridwan?",
                 jawaban: "H. Ibrahim",
                 pilihan: ["H. Ibrahim", "Hasan Besari", "Ahmad Pandi", "Murdhi"],
                 judul: "Kuis Ramadhan",
@@ -383,6 +420,9 @@
         let nomorSoal = 0;
         const totalSoal = 15;
         let isStartSoundPlayed = false;
+        let timerInterval = null;
+        let timeLeft = 120; // 2 menit dalam detik
+        let isGameOverSoundPlayed = false; // Kontrol suara alhamdulillah
 
         // Fungsi untuk memainkan suara
         function playSound(type) {
@@ -392,9 +432,10 @@
             } else if (type === 'fail') {
                 const audio = new Audio('gameover.wav');
                 audio.play();
-            } else if (type === 'gameover') {
-                const audio = new Audio('alhamdulillah.mp3'); // Diubah menjadi alhamdulillah.mp3
+            } else if (type === 'gameover' && !isGameOverSoundPlayed) {
+                const audio = new Audio('alhamdulillah.mp3');
                 audio.play();
+                isGameOverSoundPlayed = true; // Pastikan hanya diputar sekali
             } else if (type === 'start' && !isStartSoundPlayed) {
                 const audio = new Audio('ping.wav');
                 audio.play();
@@ -402,14 +443,37 @@
             }
         }
 
+        // Fungsi untuk memperbarui timer
+        function updateTimer() {
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            document.getElementById("timer").textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                skorSalah += (totalSoal - (skorBenar + skorSalah)); // Soal yang belum dijawab dianggap salah
+                akhirPermainan();
+            }
+            timeLeft--;
+        }
+
         function mulaiPermainan() {
             document.getElementById("startScreen").style.display = "none";
+            document.getElementById("timerContainer").style.display = "flex";
             document.getElementById("pilihanGanda").style.display = "flex";
             document.getElementById("skor").style.display = "block";
 
             const gameArea = document.getElementById("gameArea");
             gameArea.classList.add("popup-animation");
             playSound('start');
+
+            // Mulai timer hanya jika belum berjalan
+            if (!timerInterval) {
+                timeLeft = 120; // Inisialisasi timer hanya sekali
+                updateTimer();
+                timerInterval = setInterval(updateTimer, 1000);
+            }
 
             setTimeout(() => {
                 gameArea.classList.remove("popup-animation");
@@ -420,10 +484,13 @@
 
             let soalRamadhan = dataTebakan.filter(soal => soal.kategori === "ramadhan" && !soalSudahDitampilkan.has(soal));
             if (soalRamadhan.length === 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
                 document.getElementById("judulGame").textContent = "Semua pertanyaan sudah terjawab!";
                 document.getElementById("petunjuk").textContent = "Terima kasih sudah bermain!";
                 document.getElementById("pilihanGanda").innerHTML = "";
                 document.getElementById("hasil").textContent = "";
+                document.getElementById("timerContainer").style.display = "none";
                 playSound('gameover');
                 return;
             }
@@ -443,7 +510,7 @@
                 const button = document.createElement("button");
                 button.textContent = shuffledPilihan[i];
                 button.onclick = function() {
-                    if (!jawabanBenar) {
+                    if (!jawabanBenar && timeLeft > 0) {
                         cekJawaban(shuffledPilihan[i], button);
                     }
                 };
@@ -465,9 +532,11 @@
                 skorBenar++;
                 document.getElementById("skorBenar").textContent = skorBenar;
                 setTimeout(() => {
-                    if (nomorSoal < totalSoal) {
+                    if (nomorSoal < totalSoal && timeLeft > 0) {
                         mulaiPermainan();
                     } else {
+                        clearInterval(timerInterval);
+                        timerInterval = null;
                         akhirPermainan();
                     }
                 }, 2000);
@@ -479,9 +548,11 @@
                 skorSalah++;
                 document.getElementById("skorSalah").textContent = skorSalah;
                 setTimeout(() => {
-                    if (nomorSoal < totalSoal) {
+                    if (nomorSoal < totalSoal && timeLeft > 0) {
                         mulaiPermainan();
                     } else {
+                        clearInterval(timerInterval);
+                        timerInterval = null;
                         akhirPermainan();
                     }
                 }, 500);
@@ -545,7 +616,8 @@
             `;
             document.getElementById("pilihanGanda").innerHTML = "";
             document.getElementById("hasil").textContent = "";
-            playSound('gameover'); // Memainkan alhamdulillah.mp3
+            document.getElementById("timerContainer").style.display = "none";
+            playSound('gameover'); // Suara hanya diputar sekali di sini
         }
 
         document.getElementById("startButton").addEventListener("click", mulaiPermainan);
