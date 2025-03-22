@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kuis Ramadhan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Signika:wght@400;700&family=Kanit&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://unpkg.com/tone"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #1A3C34; /* Hijau Tua */
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            overflow-x: hidden;
+            position: relative; /* Ditambahkan untuk mendukung positioning copyright */
+        }
+
+        #gameArea {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 100%;
+            width: 95%;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        #judulGame {
+            font-family: 'Signika', sans-serif;
+            font-size: 50px;
+            color: #D4AF37; /* Emas */
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        #judulGame.ramadhan {
+            color: #D4AF37; /* Tetap emas untuk konsistensi */
+        }
+
+        #petunjuk {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        #pilihanGanda {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        #pilihanGanda button {
+            font-size: 24px;
+            padding: 12px 20px;
+            margin: 8px;
+            border: none;
+            border-radius: 8px;
+            background-color: #F5E8C7; /* Krem */
+            color: #2E4A47; /* Hijau Gelap */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            flex: 1 1 auto;
+            min-width: 150px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #pilihanGanda button:hover {
+            background-color: #E8DAB2; /* Krem sedikit lebih gelap saat hover */
+        }
+
+        #pilihanGanda button.selected {
+            background-color: #f0ad4e;
+        }
+
+        #pilihanGanda button.salah {
+            background-color: #FF0000;
+            animation: shake 0.5s;
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        #hasil {
+            font-size: 24px;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .fireworks {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .firework {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #ffeb3b;
+            animation: explode 1s ease-out forwards,
+                        sparkle 0.5s 1.5s infinite;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: translate(0, 0) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--x), var(--y)) scale(3);
+                opacity: 0;
+            }
+        }
+
+        @keyframes sparkle {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.2;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #judulGame {
+                font-size: 40px;
+            }
+            #petunjuk {
+                font-size: 20px;
+            }
+            #pilihanGanda button {
+                font-size: 18px;
+                padding: 10px 16px;
+                min-width: 120px;
+            }
+            #hasil {
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            #pilihanGanda button {
+                flex: 1 1 100%;
+                margin: 8px 0;
+            }
+        }
+        #skor {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+        #skorBenar {
+            color: #00FF00;
+        }
+        #skorSalah {
+            color: #FF0000;
+        }
+
+        #startButton {
+            font-size: 24px;
+            padding: 12px 20px;
+            margin: 8px;
+            border: none;
+            border-radius: 8px;
+            background-color: #F5E8C7; /* Krem */
+            color: #2E4A47; /* Hijau Gelap */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #startButton:hover {
+            background-color: #E8DAB2; /* Krem sedikit lebih gelap */
+        }
+
+        #bismillah {
+            font-size: 20px;
+            color: #333;
+            margin-top: 10px;
+        }
+
+        #skorAkhir {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        @keyframes popup {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .popup-animation {
+            animation: popup 0.5s ease-in-out forwards;
+        }
+
+        #copyright {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-family: 'Kanit', sans-serif;
+            font-size: 14px;
+            color: #F5E8C7; /* Krem, kontras dengan background hijau tua */
+        }
+    </style>
+</head>
+<body>
+    <div id="gameArea">
+        <h1 id="judulGame">Kuis Ramadhan</h1>
+        <p id="petunjuk">Selamat datang di Kuis Ramadhan!</p>
+        <div id="startScreen">
+            <button id="startButton">Start</button>
+            <p id="bismillah">Bismillah</p>
+        </div>
+        <div id="pilihanGanda" style="display: none;">
+            <button id="pilihanA"></button>
+            <button id="pilihanB"></button>
+            <button id="pilihanC"></button>
+            <button id="pilihanD"></button>
+        </div>
+        <p id="hasil"></p>
+        <div class="fireworks"></div>
+        <div id="skor" style="display: none;">
+            Benar: <span id="skorBenar">0</span> / Salah: <span id="skorSalah">0</span>
+        </div>
+    </div>
+    <div id="copyright">© Mas Har</div>
+    <script>
+        // Data tebakan (tidak diubah)
+        const dataTebakan = [
+            {
+                deskripsi: "Apa hubungan kekerabatan (sebelum menikah) Mbak Kaum Ridwan dan Mbah Siti Aisyah?",
+                jawaban: "Memiliki mbah yang sama dari jalur ibu",
+                pilihan: ["Tidak ada hubungan kekerabatan", "Memiliki mbah yang sama dari jalur bapak", "Memiliki mbah yang sama dari jalur ibu", "Memiliki buyut yang sama"],
+                judul: "Kuis Ramadhan",
+                kategori: "ramadhan"
+            },
+            {
+                deskripsi: "Siapa nama kakek Mbah Kaum Ridwan: Hasan Besari atau H. Ibrahim?",
+                jawaban: "H. Ibrahim",
+                pilihan: ["H. Ibrahim", "Hasan Besari", "Ahmad Pandi", "Murdhi"],
+                judul: "Kuis Ramadhan",
+                kategori: "ramadhan"
+            },
+            {
+                deskripsi: "Doa apa yang diajarkan Nabi agar banyak dibaca pada malam-malam Lailatul Qadar?",
+                jawaban: "Allahumma innaka ‘afuwwun tuhibbul ‘afwa... dst",
+                pilihan: ["Rabbighfirli waliwalidayya... dst", "Allahumma innaka ‘afuwwun tuhibbul ‘afwa... dst", "Rabbana atina fiddunya... dst", "Astaghfirullah... dst"],
+                judul: "Kuis Ramadhan",
+                kategori: "ramadhan"
+            },
+            {
+                deskripsi: "Kapan sunnahnya kita mengunjungi atau berziarah kubur?",
+                jawaban: "Kapan saja/tidak ada waktu khusus",
+                pilihan: ["Sebelum berpuasa", "Sebelum Idul Fitri", "Sebelum Idul Fitri dan sebelum berpuasa", "Kapan saja/tidak ada waktu khusus"],
+                judul: "Kuis Ramadhan",
+                kategori: "ramadhan"
+            },
+            {
+                deskripsi: "Apa tujuan utama dari ziarah kubur?",
+                jawaban: "Lebih mengingatkan hari akhirat",
+                pilihan: ["Lebih mengingatkan hari akhirat", "Mengenang keluarga yang sudah wafat", "Mengirimkan doa", "Agar lokasi kuburan terawat"],
+                judul: "Kuis Ramadhan",
+                kategori: "ramadhan"
+            },
+            {
+                deskripsi: "Mengapa Mbah Kaum Ridwan dan Mbah Kambali saling bersaudara?",
+                jawaban: "Memiliki istri yang kakak beradik",
+                pilihan: ["Memiliki mbah yang sama dari jalur ibu", "Memiliki mbah yang sama dari jalur ayah", "Kakak ipar/adik ipar", "Memiliki istri yang kakak beradik"],
+                judul: "Kuis Ramadhan",
+                kategori: "ramadhan"
+            },
+            {
+                deskripsi: "Mana amalan yang tidak disunnahkan sebelum atau sesudah sholat Idul Fitri?",
+                jawaban: "Berpuasa sejenak",
+                pilihan: ["Berpuasa sejenak", "Mandi sebelum sholat", "Memilih jalan yang berbeda ketika berangkat dan pulang", "Memakai pakaian terbaik yang dimiliki"],
+                judul: "Kuis Ramadhan",
+                kategori: "ramadhan"
+            },
+            {
+                deskripsi: "Kapan waktu mulai wajib puasa?",
+                jawaban: "Sejak waktu fajar sampai matahari tenggelam",
+                pilihan: ["Sejak terbit matahari sampai matahari tenggelam", "Sejak terdengar adzan Subuh sampai adzan Maghrib", "Sejak waktu imsak sampai matahari tenggelam", "Sejak waktu fajar sampai matahari tenggelam"],
+                judul: "Kuis Ramadhan",
+                kategori: "ramadhan"
+            },
+            {
+                deskripsi: "Apa tujuan utama dari berpuasa?",
+                jawaban: "Agar menjadi hamba yang bertakwa",
+                pilihan: ["Agar tubuh menjadi sehat", "Agar bisa merasakan kondisi orang miskin", "Agar menjadi hamba yang bertakwa", "Agar berlatih menjaga emosi"],
+                judul: "Kuis Ramadhan",
+                kategori: "ramadhan"
+            },
+            {
+                deskripsi: "Apa arti ketika ada burung gagak/kreak berbunyi di malam hari?",
+                jawaban: "Tidak berarti apa-apa",
+                pilihan: ["Tidak berarti apa-apa", "Tanda akan ada orang yang meninggal", "Tanda sial, sebaiknya jangan banyak beraktivitas", "Tanda ada orang yang sedang sakit"],
+                judul: "Kuis Ramadhan",
+                kategori: "ramadhan"
+            },
+            {
+                deskripsi: "Apa arti tauhid \"La ilaha illallah\"?",
+                jawaban: "Tidak ada yang berhak disembah kecuali Allah",
+                pilihan: ["Tidak ada pencipta kecuali Allah", "Tidak ada yang berhak disembah kecuali Allah", "Tidak ada yang dipatuhi kecuali Allah", "Tidak ada hukum kecuali hukum Allah"],
+                judul: "Kuis Ramadhan",
+                kategori: "ramadhan"
+            },
+            {
+                deskripsi: "Bagaimana keyakinan kita terhadap orang non-Muslim bila tetap dalam agamanya sampai meninggal?",
+                jawaban: "Mereka akan kekal di dalam neraka",
+                pilihan: ["Mereka akan menemukan jalan surganya sendiri", "Mereka akan kekal di dalam neraka", "Mereka akan masuk neraka sementara", "Tidak tahu"],
+                judul: "Kuis Ramadhan",
+                kategori: "ramadhan"
+            },
+            {
+                deskripsi: "Bagaimana sikap kita terhadap orang Kristen yang mengucapkan selamat kepada kita ketika Idul Fitri?",
+                jawaban: "Menerimanya, namun tidak membalasnya saat Natal",
+                pilihan: ["Menerimanya dan membalasnya saat Natal", "Menolak ucapannya dengan baik-baik", "Menerimanya, namun tidak membalasnya saat Natal"],
+                judul: "Kuis Ramadhan",
+                kategori: "ramadhan"
+            },
+            {
+                deskripsi: "Siapa yang bukan anaknya Mbah Marzuki?",
+                jawaban: "Mami",
+                pilihan: ["Sendur", "Mami", "Marsini", "Pardi"],
+                judul: "Kuis Ramadhan",
+                kategori: "ramadhan"
+            },
+            {
+                deskripsi: "Apa hubungan kekerabatan Mbah Ridho dan Mbah Marsiyem?",
+                jawaban: "Memiliki mbah yang sama dari jalur bapak",
+                pilihan: ["Memiliki mbah yang sama dari jalur bapak", "Memiliki mbah yang sama dari jalur ibu", "Memiliki buyut yang sama"],
+                judul: "Kuis Ramadhan",
+                kategori: "ramadhan"
+            },
+        ];
+
+        // Variabel global untuk melacak permainan
+        let soalSaatIni;
+        let synth = new Tone.Synth().toDestination();
+        let jawabanBenar = false;
+        let kategoriSoal = "ramadhan";
+        let skorBenar = 0;
+        let skorSalah = 0;
+        let soalSudahDitampilkan = new Set();
+        let nomorSoal = 0;
+        const totalSoal = 15;
+        let isStartSoundPlayed = false;
+
+        // Fungsi untuk memainkan suara
+        function playSound(type) {
+            if (type === 'success') {
+                const audio = new Audio('success.wav');
+                audio.play();
+            } else if (type === 'fail') {
+                const audio = new Audio('gameover.wav');
+                audio.play();
+            } else if (type === 'gameover') {
+                const audio = new Audio('gameover.wav');
+                audio.play();
+            } else if (type === 'start' && !isStartSoundPlayed) {
+                const audio = new Audio('ping.wav');
+                audio.play();
+                isStartSoundPlayed = true;
+            }
+        }
+
+        function mulaiPermainan() {
+            document.getElementById("startScreen").style.display = "none";
+            document.getElementById("pilihanGanda").style.display = "flex";
+            document.getElementById("skor").style.display = "block";
+
+            const gameArea = document.getElementById("gameArea");
+            gameArea.classList.add("popup-animation");
+            playSound('start');
+
+            setTimeout(() => {
+                gameArea.classList.remove("popup-animation");
+            }, 500);
+
+            jawabanBenar = false;
+            nomorSoal++;
+
+            let soalRamadhan = dataTebakan.filter(soal => soal.kategori === "ramadhan" && !soalSudahDitampilkan.has(soal));
+            if (soalRamadhan.length === 0) {
+                document.getElementById("judulGame").textContent = "Semua pertanyaan sudah terjawab!";
+                document.getElementById("petunjuk").textContent = "Terima kasih sudah bermain!";
+                document.getElementById("pilihanGanda").innerHTML = "";
+                document.getElementById("hasil").textContent = "";
+                playSound('gameover');
+                return;
+            }
+
+            soalSaatIni = soalRamadhan[Math.floor(Math.random() * soalRamadhan.length)];
+            soalSudahDitampilkan.add(soalSaatIni);
+
+            document.getElementById("judulGame").textContent = soalSaatIni.judul;
+            document.getElementById("judulGame").className = soalSaatIni.kategori;
+
+            document.getElementById("petunjuk").textContent = soalSaatIni.deskripsi;
+
+            const pilihanContainer = document.getElementById("pilihanGanda");
+            pilihanContainer.innerHTML = '';
+            const shuffledPilihan = [...soalSaatIni.pilihan];
+            for (let i = 0; i < shuffledPilihan.length; i++) {
+                const button = document.createElement("button");
+                button.textContent = shuffledPilihan[i];
+                button.onclick = function() {
+                    if (!jawabanBenar) {
+                        cekJawaban(shuffledPilihan[i], button);
+                    }
+                };
+                pilihanContainer.appendChild(button);
+            }
+            document.getElementById("hasil").textContent = "";
+            resetPilihan();
+
+            document.getElementById("skorBenar").textContent = skorBenar;
+            document.getElementById("skorSalah").textContent = skorSalah;
+        }
+
+        function cekJawaban(jawabanYangDipilih, buttonElement) {
+            if (jawabanYangDipilih === soalSaatIni.jawaban) {
+                document.getElementById("hasil").textContent = "Benar!";
+                triggerFireworks();
+                playSound('success');
+                jawabanBenar = true;
+                skorBenar++;
+                document.getElementById("skorBenar").textContent = skorBenar;
+                setTimeout(() => {
+                    if (nomorSoal < totalSoal) {
+                        mulaiPermainan();
+                    } else {
+                        akhirPermainan();
+                    }
+                }, 2000);
+            } else {
+                document.getElementById("hasil").textContent = "Salah!";
+                playSound('fail');
+                buttonElement.classList.add("salah");
+                buttonElement.style.animationPlayState = 'running';
+                skorSalah++;
+                document.getElementById("skorSalah").textContent = skorSalah;
+                setTimeout(() => {
+                    if (nomorSoal < totalSoal) {
+                        mulaiPermainan();
+                    } else {
+                        akhirPermainan();
+                    }
+                }, 500);
+            }
+        }
+
+        function resetPilihan() {
+            const pilihanButtons = document.querySelectorAll("#pilihanGanda button");
+            pilihanButtons.forEach(button => {
+                button.classList.remove("selected");
+                button.classList.remove("salah");
+                button.style.animationPlayState = 'paused';
+            });
+        }
+
+        function triggerFireworks() {
+            const container = document.querySelector(".fireworks");
+            const count = 20;
+
+            for (let i = 0; i < count; i++) {
+                const firework = document.createElement("div");
+                firework.classList.add("firework");
+                const x = Math.random() * window.innerWidth - 100;
+                const y = Math.random() * window.innerHeight - 100;
+                const dx = Math.random() * 200 - 100;
+                const dy = Math.random() * 200 - 100;
+
+                firework.style.setProperty("--x", `${dx}px`);
+                firework.style.setProperty("--y", `${dy}px`);
+                firework.style.left = `${x}px`;
+                firework.style.top = `${y}px`;
+
+                container.appendChild(firework);
+            }
+
+            setTimeout(() => {
+                container.innerHTML = "";
+            }, 2000);
+        }
+
+        function akhirPermainan() {
+            const skorAkhir = (skorBenar / totalSoal) * 100;
+            let warnaSkor;
+            let komentar;
+
+            if (skorAkhir >= 80) {
+                warnaSkor = "#00FF00";
+                komentar = "Kamu lumayan pinter yah...";
+            } else if (skorAkhir >= 60 && skorAkhir < 80) {
+                warnaSkor = "#FF8C00";
+                komentar = "Score kamu lumayan...";
+            } else {
+                warnaSkor = "#FF0000";
+                komentar = "Semangat, belajar lagi ya!";
+            }
+
+            document.getElementById("judulGame").textContent = "Permainan Selesai!";
+            document.getElementById("petunjuk").innerHTML = `
+                <span id="skorAkhir" style="color: ${warnaSkor};">Skor Akhir Anda: ${skorAkhir.toFixed(2)}%</span><br>
+                Benar: ${skorBenar}<br>Salah: ${skorSalah}<br><br>${komentar}
+            `;
+            document.getElementById("pilihanGanda").innerHTML = "";
+            document.getElementById("hasil").textContent = "";
+            playSound('gameover');
+        }
+
+        document.getElementById("startButton").addEventListener("click", mulaiPermainan);
+    </script>
+</body>
+</html>
