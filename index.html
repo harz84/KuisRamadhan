@@ -19,7 +19,6 @@
             padding: 0;
             width: 100%;
             overflow-x: hidden;
-            position: relative; /* Ditambahkan untuk mendukung positioning copyright */
         }
 
         #gameArea {
@@ -232,12 +231,11 @@
         }
 
         #copyright {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
             font-family: 'Kanit', sans-serif;
             font-size: 14px;
             color: #F5E8C7; /* Krem, kontras dengan background hijau tua */
+            text-align: center;
+            margin-top: 10px; /* Jarak dari kotak putih */
         }
     </style>
 </head>
@@ -263,7 +261,7 @@
     </div>
     <div id="copyright">© Mas Har</div>
     <script>
-        // Data tebakan (tidak diubah)
+        // Data tebakan
         const dataTebakan = [
             {
                 deskripsi: "Apa hubungan kekerabatan (sebelum menikah) Mbak Kaum Ridwan dan Mbah Siti Aisyah?",
