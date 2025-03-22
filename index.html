@@ -19,6 +19,7 @@
             padding: 0;
             width: 100%;
             overflow-x: hidden;
+            position: relative; /* Ditambahkan untuk mendukung positioning copyright */
         }
 
         #gameArea {
@@ -231,11 +232,12 @@
         }
 
         #copyright {
+            position: absolute;
+            top: 10px; /* Dipindahkan ke atas */
+            right: 10px; /* Tetap di kanan */
             font-family: 'Kanit', sans-serif;
             font-size: 14px;
             color: #F5E8C7; /* Krem, kontras dengan background hijau tua */
-            text-align: center;
-            margin-top: 10px; /* Jarak dari kotak putih */
         }
     </style>
 </head>
