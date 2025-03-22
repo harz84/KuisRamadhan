@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Signika:wght@400;700&family=Kanit&family=Acme&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <script src="https://unpkg.com/tone"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -14,7 +15,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #1A3C34; /* Hijau Tua */
+            background-color: #1A3C34;
             margin: 0;
             padding: 0;
             width: 100%;
@@ -50,18 +51,18 @@
         #timer {
             font-family: 'Acme', sans-serif;
             font-size: 40px;
-            color: #2E4A47; /* Hijau Gelap */
+            color: #2E4A47;
         }
 
         #judulGame {
             font-family: 'Signika', sans-serif;
             font-size: 50px;
-            color: #D4AF37; /* Emas */
+            color: #D4AF37;
             margin-bottom: 15px;
             font-weight: bold;
         }
         #judulGame.ramadhan {
-            color: #D4AF37; /* Tetap emas untuk konsistensi */
+            color: #D4AF37;
         }
 
         #petunjuk {
@@ -75,7 +76,6 @@
             flex-wrap: wrap;
             justify-content: center;
             margin-bottom: 20px;
-            position: relative; /* Untuk positioning animasi */
         }
 
         #pilihanGanda button {
@@ -84,8 +84,8 @@
             margin: 8px;
             border: none;
             border-radius: 8px;
-            background-color: #F5E8C7; /* Krem */
-            color: #2E4A47; /* Hijau Gelap */
+            background-color: #F5E8C7;
+            color: #2E4A47;
             cursor: pointer;
             transition: background-color 0.3s ease;
             flex: 1 1 auto;
@@ -95,11 +95,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative; /* Untuk animasi di samping */
         }
 
         #pilihanGanda button:hover {
-            background-color: #E8DAB2; /* Krem sedikit lebih gelap saat hover */
+            background-color: #E8DAB2;
         }
 
         #pilihanGanda button.selected {
@@ -118,13 +117,6 @@
             100% { transform: translateX(0); }
         }
 
-        #correctAnimation {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            display: none;
-        }
-
         #hasil {
             font-size: 24px;
             margin-top: 20px;
@@ -132,47 +124,14 @@
             color: #333;
         }
 
-        .fireworks {
+        #lottie-container {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 10px;
+            right: 10px;
+            width: 100px;
+            height: 100px;
             pointer-events: none;
             z-index: 1000;
-        }
-
-        .firework {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: #ffeb3b;
-            animation: explode 1s ease-out forwards,
-                        sparkle 0.5s 1.5s infinite;
-        }
-
-        @keyframes explode {
-            0% {
-                transform: translate(0, 0) scale(0);
-                opacity: 1;
-            }
-            100% {
-                transform: translate(var(--x), var(--y)) scale(3);
-                opacity: 0;
-            }
-        }
-
-        @keyframes sparkle {
-            0% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.2;
-            }
-            100% {
-                opacity: 1;
-            }
         }
 
         @media (max-width: 768px) {
@@ -197,9 +156,9 @@
                 width: 30px;
                 height: 30px;
             }
-            #correctAnimation {
-                width: 40px;
-                height: 40px;
+            #lottie-container {
+                width: 80px;
+                height: 80px;
             }
         }
 
@@ -215,16 +174,16 @@
                 width: 25px;
                 height: 25px;
             }
-            #correctAnimation {
-                width: 30px;
-                height: 30px;
+            #lottie-container {
+                width: 60px;
+                height: 60px;
             }
         }
         #skor {
             position: absolute;
-            bottom: 10px; /* Dipindah ke kanan bawah */
+            bottom: 10px;
             right: 10px;
-            font-size: 10px; /* Dikecilkan menjadi setengah dari 20px */
+            font-size: 18px;
             font-weight: bold;
             color: #333;
         }
@@ -241,14 +200,14 @@
             margin: 8px;
             border: none;
             border-radius: 8px;
-            background-color: #F5E8C7; /* Krem */
-            color: #2E4A47; /* Hijau Gelap */
+            background-color: #F5E8C7;
+            color: #2E4A47;
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
 
         #startButton:hover {
-            background-color: #E8DAB2; /* Krem sedikit lebih gelap */
+            background-color: #E8DAB2;
         }
 
         #bismillah {
@@ -287,7 +246,7 @@
             right: 10px;
             font-family: 'Kanit', sans-serif;
             font-size: 14px;
-            color: #F5E8C7; /* Krem, kontras dengan background hijau tua */
+            color: #F5E8C7;
         }
     </style>
 </head>
@@ -308,17 +267,15 @@
             <button id="pilihanB"></button>
             <button id="pilihanC"></button>
             <button id="pilihanD"></button>
-            <img id="correctAnimation" src="correct.gif" alt="Correct Animation">
         </div>
         <p id="hasil"></p>
-        <div class="fireworks"></div>
+        <div id="lottie-container"></div>
         <div id="skor" style="display: none;">
             Benar: <span id="skorBenar">0</span> / Salah: <span id="skorSalah">0</span>
         </div>
     </div>
     <div id="copyright">© Mas Har</div>
     <script>
-        // Data tebakan
         const dataTebakan = [
             {
                 deskripsi: "Apa hubungan kekerabatan (sebelum menikah) Mbak Kaum Ridwan dan Mbah Siti Aisyah?",
@@ -427,7 +384,6 @@
             },
         ];
 
-        // Variabel global untuk melacak permainan
         let soalSaatIni;
         let synth = new Tone.Synth().toDestination();
         let jawabanBenar = false;
@@ -439,10 +395,12 @@
         const totalSoal = 15;
         let isStartSoundPlayed = false;
         let timerInterval = null;
-        let timeLeft = 120; // 2 menit dalam detik
+        let timeLeft = 120;
         let isGameOverSoundPlayed = false;
+        let lottieAnimation = null; // Variabel untuk melacak animasi Lottie
 
-        // Fungsi untuk memainkan suara
+        const lottieData = {"nm":"Success","ddd":0,"h":200,"w":200,"meta":{"a":"Inktwin","k":"Successful animation, check, success, congrats, cangratulation","d":"Successful animation","g":"LottieFiles AE 0.1.20"},"layers":[{"ty":4,"nm":"Shape Layer 4","sr":1,"st":13,"op":973,"ip":48,"hd":false,"ddd":0,"bm":0,"hasMask":false,"ao":0,"ks":{"a":{"a":0,"k":[77,2,0],"ix":1},"s":{"a":0,"k":[55.682,55.682,100],"ix":6},"sk":{"a":0,"k":0},"p":{"a":0,"k":[-5.051,60.949,0],"ix":2},"r":{"a":0,"k":0,"ix":10},"sa":{"a":0,"k":0},"o":{"a":1,"k":[{"o":{"x":0.333,"y":0},"i":{"x":0,"y":1},"s":[100],"t":60},{"s":[0],"t":70}],"ix":11}},"ef":[],"shapes":[{"ty":"gr","bm":0,"hd":false,"mn":"ADBE Vector Group","nm":"Shape 2","ix":1,"cix":2,"np":3,"it":[{"ty":"sh","bm":0,"hd":false,"mn":"ADBE Vector Shape - Group","nm":"Path 1","ix":1,"d":1,"ks":{"a":0,"k":{"c":false,"i":[[0,0]],"o":[[0,0]],"v":[[955.194,251.637]]},"ix":2}},{"ty":"st","bm":0,"hd":false,"mn":"ADBE Vector Graphic - Stroke","nm":"Stroke 1","lc":1,"lj":1,"ml":4,"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":64,"ix":5},"c":{"a":0,"k":[1,1,1],"ix":3}},{"ty":"tr","a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"sk":{"a":0,"k":0,"ix":4},"p":{"a":0,"k":[0,0],"ix":2},"r":{"a":0,"k":0,"ix":6},"sa":{"a":0,"k":0,"ix":5},"o":{"a":0,"k":100,"ix":7}}]},{"ty":"gr","bm":0,"hd":false,"mn":"ADBE Vector Group","nm":"Shape 1","ix":2,"cix":2,"np":3,"it":[{"ty":"sh","bm":0,"hd":false,"mn":"ADBE Vector Shape - Group","nm":"Path 1","ix":1,"d":1,"ks":{"a":0,"k":{"c":false,"i":[[-236,0],[0,169.697],[223.622,0],[0,0],[0,0],[0,0],[0,0]],"o":[[232.172,0],[0,-178.341],[-228.293,0],[0,0],[0,0],[0,0],[0,0]],"v":[[54.299,326.269],[430.045,-2.319],[81.56,-379.819],[-238.557,-171.999],[-56,6],[30,92],[210,-88]]},"ix":2}},{"ty":"st","bm":0,"hd":false,"mn":"ADBE Vector Graphic - Stroke","nm":"Stroke 1","lc":2,"lj":2,"ml":1,"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":64,"ix":5},"c":{"a":0,"k":[1,1,1],"ix":3}},{"ty":"tr","a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"sk":{"a":0,"k":0,"ix":4},"p":{"a":0,"k":[0,0],"ix":2},"r":{"a":0,"k":0,"ix":6},"sa":{"a":0,"k":0,"ix":5},"o":{"a":0,"k":100,"ix":7}}]},{"ty":"tm","bm":0,"hd":false,"mn":"ADBE Vector Filter - Trim","nm":"Trim Paths 1","ix":3,"e":{"a":1,"k":[{"o":{"x":0.851,"y":0},"i":{"x":0,"y":1},"s":[100],"t":49},{"s":[0],"t":70}],"ix":2},"o":{"a":0,"k":0,"ix":3},"s":{"a":1,"k":[{"o":{"x":0.851,"y":0},"i":{"x":0,"y":1},"s":[83],"t":48},{"s":[0],"t":69}],"ix":1},"m":1}],"ind":1,"parent":4},{"ty":4,"nm":"Shape Layer 2","sr":1,"st":0,"op":49,"ip":0,"hd":false,"ddd":0,"bm":0,"hasMask":false,"ao":0,"ks":{"a":{"a":0,"k":[77,2,0],"ix":1},"s":{"a":0,"k":[55.682,55.682,100],"ix":6},"sk":{"a":0,"k":0},"p":{"a":0,"k":[-5.051,60.949,0],"ix":2},"r":{"a":0,"k":0,"ix":10},"sa":{"a":0,"k":0},"o":{"a":0,"k":100,"ix":11}},"ef":[],"shapes":[{"ty":"gr","bm":0,"hd":false,"mn":"ADBE Vector Group","nm":"Shape 1","ix":1,"cix":2,"np":3,"it":[{"ty":"sh","bm":0,"hd":false,"mn":"ADBE Vector Shape - Group","nm":"Path 1","ix":1,"d":1,"ks":{"a":0,"k":{"c":false,"i":[[0,0],[0,0],[0,0]],"o":[[0,0],[0,0],[0,0]],"v":[[-56,6],[30,92],[210,-88]]},"ix":2}},{"ty":"st","bm":0,"hd":false,"mn":"ADBE Vector Graphic - Stroke","nm":"Stroke 1","lc":2,"lj":2,"ml":1,"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":64,"ix":5},"c":{"a":0,"k":[1,1,1],"ix":3}},{"ty":"fl","bm":0,"hd":false,"mn":"ADBE Vector Graphic - Fill","nm":"Fill 1","c":{"a":0,"k":[0.2039,0.4667,0.4196],"ix":4},"r":1,"o":{"a":0,"k":100,"ix":5}},{"ty":"tr","a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"sk":{"a":0,"k":0,"ix":4},"p":{"a":0,"k":[0,0],"ix":2},"r":{"a":0,"k":0,"ix":6},"sa":{"a":0,"k":0,"ix":5},"o":{"a":0,"k":100,"ix":7}}]},{"ty":"tm","bm":0,"hd":false,"mn":"ADBE Vector Filter - Trim","nm":"Trim Paths 1","ix":2,"e":{"a":1,"k":[{"o":{"x":0.333,"y":0},"i":{"x":0,"y":1},"s":[0],"t":12},{"s":[100],"t":24}],"ix":2},"o":{"a":0,"k":0,"ix":3},"s":{"a":0,"k":0,"ix":1},"m":1}],"ind":2,"parent":4},{"ty":4,"nm":"Shape Layer 3","sr":1,"st":-3,"op":957,"ip":-3,"hd":false,"ddd":0,"bm":0,"hasMask":false,"ao":0,"ks":{"a":{"a":0,"k":[0,0,0],"ix":1},"s":{"a":0,"k":[25,25,100],"ix":6},"sk":{"a":0,"k":0},"p":{"a":0,"k":[101.49999999999999,92.5,0],"ix":2},"r":{"a":0,"k":0,"ix":10},"sa":{"a":0,"k":0},"o":{"a":0,"k":100,"ix":11}},"ef":[],"shapes":[{"ty":"gr","bm":0,"hd":false,"mn":"ADBE Vector Group","nm":"Shape 1","ix":1,"cix":2,"np":3,"it":[{"ty":"sh","bm":0,"hd":false,"mn":"ADBE Vector Shape - Group","nm":"Path 1","ix":1,"d":1,"ks":{"a":0,"k":{"c":false,"i":[[0,0],[0,0]],"o":[[0,0],[0,0]],"v":[[-8,-78],[-8,-254]]},"ix":2}},{"ty":"st","bm":0,"hd":false,"mn":"ADBE Vector Graphic - Stroke","nm":"Stroke 1","lc":2,"lj":2,"ml":1,"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":20,"ix":5},"c":{"a":0,"k":[1,1,1],"ix":3}},{"ty":"fl","bm":0,"hd":false,"mn":"ADBE Vector Graphic - Fill","nm":"Fill 1","c":{"a":0,"k":[0.2039,0.4667,0.4196],"ix":4},"r":1,"o":{"a":0,"k":100,"ix":5}},{"ty":"tr","a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"sk":{"a":0,"k":0,"ix":4},"p":{"a":0,"k":[0,0],"ix":2},"r":{"a":0,"k":0,"ix":6},"sa":{"a":0,"k":0,"ix":5},"o":{"a":0,"k":100,"ix":7}}]},{"ty":"tm","bm":0,"hd":false,"mn":"ADBE Vector Filter - Trim","nm":"Trim Paths 1","ix":2,"e":{"a":1,"k":[{"o":{"x":0.333,"y":0},"i":{"x":0,"y":1},"s":[0],"t":9},{"s":[100],"t":21}],"ix":2},"o":{"a":0,"k":0,"ix":3},"s":{"a":1,"k":[{"o":{"x":0.333,"y":0},"i":{"x":0,"y":1},"s":[0],"t":11},{"s":[100],"t":23}],"ix":1},"m":1},{"ty":"rp","bm":0,"hd":false,"mn":"ADBE Vector Filter - Repeater","nm":"Repeater 1","ix":3,"m":1,"c":{"a":0,"k":10,"ix":1},"o":{"a":0,"k":0,"ix":2},"tr":{"a":{"a":0,"k":[-9,17],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"sk":{"a":0,"k":0},"p":{"a":0,"k":[0,0],"ix":2},"r":{"a":0,"k":36,"ix":4},"sa":{"a":0,"k":0},"so":{"a":0,"k":100,"ix":5},"eo":{"a":0,"k":100,"ix":6}}}],"ind":3},{"ty":4,"nm":"Shape Layer 1","sr":1,"st":0,"op":960,"ip":0,"hd":false,"ddd":0,"bm":0,"hasMask":false,"ao":0,"ks":{"a":{"a":0,"k":[-5.051,60.949,0],"ix":1},"s":{"a":1,"k":[{"o":{"x":0.333,"y":0},"i":{"x":0.833,"y":0.833},"s":[0,0,100],"t":0},{"s":[25,25,100],"t":12}],"ix":6,"x":"var $bm_rt;\nvar amp, freq, decay, n, n, t, t, v;\namp = 0.06;\nfreq = 2;\ndecay = 4;\n$bm_rt = n = 0;\nif (numKeys > 0) {\n    $bm_rt = n = nearestKey(time).index;\n    if (key(n).time > time) {\n        n--;\n    }\n}\nif (n == 0) {\n    $bm_rt = t = 0;\n} else {\n    $bm_rt = t = $bm_sub(time, key(n).time);\n}\nif (n > 0) {\n    v = velocityAtTime($bm_sub(key(n).time, $bm_div(thisComp.frameDuration, 10)));\n    $bm_rt = $bm_sum(value, $bm_div($bm_mul($bm_mul(v, amp), Math.sin($bm_mul($bm_mul($bm_mul(freq, t), 2), Math.PI))), Math.exp($bm_mul(decay, t))));\n} else {\n    $bm_rt = value;\n}"},"sk":{"a":0,"k":0},"p":{"a":0,"k":[100,100,0],"ix":2},"r":{"a":1,"k":[{"o":{"x":0.333,"y":0},"i":{"x":0.833,"y":0.833},"s":[45],"t":0},{"s":[0],"t":12}],"ix":10,"x":"var $bm_rt;\nvar amp, freq, decay, n, n, t, t, v;\namp = 0.06;\nfreq = 2;\ndecay = 4;\n$bm_rt = n = 0;\nif (numKeys > 0) {\n    $bm_rt = n = nearestKey(time).index;\n    if (key(n).time > time) {\n        n--;\n    }\n}\nif (n == 0) {\n    $bm_rt = t = 0;\n} else {\n    $bm_rt = t = $bm_sub(time, key(n).time);\n}\nif (n > 0) {\n    v = velocityAtTime($bm_sub(key(n).time, $bm_div(thisComp.frameDuration, 10)));\n    $bm_rt = $bm_sum(value, $bm_div($bm_mul($bm_mul(v, amp), Math.sin($bm_mul($bm_mul($bm_mul(freq, t), 2), Math.PI))), Math.exp($bm_mul(decay, t))));\n} else {\n    $bm_rt = value;\n}"},"sa":{"a":0,"k":0},"o":{"a":1,"k":[{"o":{"x":0.333,"y":0},"i":{"x":0,"y":1},"s":[100],"t":56},{"s":[0],"t":64}],"ix":11}},"ef":[],"shapes":[{"ty":"gr","bm":0,"hd":false,"mn":"ADBE Vector Group","nm":"Shape 1","ix":1,"cix":2,"np":2,"it":[{"ty":"st","bm":0,"hd":false,"mn":"ADBE Vector Graphic - Stroke","nm":"Stroke 1","lc":1,"lj":1,"ml":4,"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":8,"ix":5},"c":{"a":0,"k":[0.2039,0.4667,0.4196],"ix":3}},{"ty":"fl","bm":0,"hd":false,"mn":"ADBE Vector Graphic - Fill","nm":"Fill 1","c":{"a":0,"k":[0.2039,0.4667,0.4196],"ix":4},"r":1,"o":{"a":0,"k":100,"ix":5}},{"ty":"tr","a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"sk":{"a":0,"k":0,"ix":4},"p":{"a":0,"k":[0,0],"ix":2},"r":{"a":0,"k":0,"ix":6},"sa":{"a":0,"k":0,"ix":5},"o":{"a":0,"k":100,"ix":7}}]},{"ty":"gr","bm":0,"hd":false,"mn":"ADBE Vector Group","nm":"Ellipse 1","ix":2,"cix":2,"np":3,"it":[{"ty":"el","bm":0,"hd":false,"mn":"ADBE Vector Shape - Ellipse","nm":"Ellipse Path 1","d":1,"p":{"a":0,"k":[0,0],"ix":3},"s":{"a":0,"k":[393.898,393.898],"ix":2}},{"ty":"st","bm":0,"hd":false,"mn":"ADBE Vector Graphic - Stroke","nm":"Stroke 1","lc":1,"lj":1,"ml":4,"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":8,"ix":5},"c":{"a":0,"k":[0.2039,0.4667,0.4196],"ix":3}},{"ty":"fl","bm":0,"hd":false,"mn":"ADBE Vector Graphic - Fill","nm":"Fill 1","c":{"a":0,"k":[0.2039,0.4667,0.4196],"ix":4},"r":1,"o":{"a":0,"k":100,"ix":5}},{"ty":"tr","a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"sk":{"a":0,"k":0,"ix":4},"p":{"a":0,"k":[-5.051,44.949],"ix":2},"r":{"a":0,"k":0,"ix":6},"sa":{"a":0,"k":0,"ix":5},"o":{"a":0,"k":100,"ix":7}}]}],"ind":4}],"v":"5.5.7","fr":24,"op":48,"ip":0,"assets":[]};
+
         function playSound(type) {
             if (type === 'success') {
                 const audio = new Audio('success.wav');
@@ -461,7 +419,6 @@
             }
         }
 
-        // Fungsi untuk memperbarui timer
         function updateTimer() {
             let minutes = Math.floor(timeLeft / 60);
             let seconds = timeLeft % 60;
@@ -533,12 +490,6 @@
                 };
                 pilihanContainer.appendChild(button);
             }
-            const correctAnimation = document.createElement("img");
-            correctAnimation.id = "correctAnimation";
-            correctAnimation.src = "correct.gif";
-            correctAnimation.alt = "Correct Animation";
-            pilihanContainer.appendChild(correctAnimation);
-
             document.getElementById("hasil").textContent = "";
             resetPilihan();
 
@@ -549,7 +500,7 @@
         function cekJawaban(jawabanYangDipilih, buttonElement) {
             if (jawabanYangDipilih === soalSaatIni.jawaban) {
                 document.getElementById("hasil").textContent = "Benar!";
-                showCorrectAnimation(buttonElement);
+                triggerLottieAnimation();
                 playSound('success');
                 jawabanBenar = true;
                 skorBenar++;
@@ -589,19 +540,33 @@
                 button.classList.remove("salah");
                 button.style.animationPlayState = 'paused';
             });
-            document.getElementById("correctAnimation").style.display = "none";
         }
 
-        function showCorrectAnimation(buttonElement) {
-            const correctAnimation = document.getElementById("correctAnimation");
-            const buttonRect = buttonElement.getBoundingClientRect();
-            const containerRect = document.getElementById("pilihanGanda").getBoundingClientRect();
-            correctAnimation.style.display = "block";
-            correctAnimation.style.left = `${buttonRect.right - containerRect.left + 10}px`; // 10px margin kanan
-            correctAnimation.style.top = `${buttonRect.top - containerRect.top + (buttonRect.height - 50) / 2}px`; // Posisi vertikal tengah
+        function triggerLottieAnimation() {
+            const container = document.getElementById("lottie-container");
+
+            if (lottieAnimation) {
+                lottieAnimation.destroy();
+                lottieAnimation = null;
+            }
+
+            container.innerHTML = "";
+
+            lottieAnimation = lottie.loadAnimation({
+                container: container,
+                renderer: 'svg',
+                loop: false,
+                autoplay: true,
+                animationData: lottieData
+            });
+
             setTimeout(() => {
-                correctAnimation.style.display = "none";
-            }, 2000); // Sesuai waktu transisi ke soal berikutnya
+                if (lottieAnimation) {
+                    lottieAnimation.destroy();
+                    lottieAnimation = null;
+                }
+                container.innerHTML = "";
+            }, 2000);
         }
 
         function akhirPermainan() {
