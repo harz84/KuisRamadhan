@@ -454,28 +454,23 @@
 
         // Fungsi untuk memainkan suara
         function playSound(type) {
+            let audioFile;
             if (type === 'success') {
-                const audio = new Audio('success.wav');
-                audio.play();
+                audioFile = 'success.wav';
             } else if (type === 'fail') {
-                const audio = new Audio('gameovertwew.wav'); // Ganti nama file suara disini
-                audio.play();
-            } else if (type === 'gameover' && !isGameOverSoundPlayed) {
-                const audio = new Audio('alhamdulillah.mp3');
-                audio.play();
-                isGameOverSoundPlayed = true; // Pastikan hanya diputar sekali
+                audioFile = 'gameovertwew.wav';
+            } else if (type === 'gameover') {
+                // Do nothing here, sound is chosen in akhirPermainan
+                return;
             } else if (type === 'start' && !isStartSoundPlayed) {
-                const audio = new Audio('ping.wav');
-                audio.play();
+                audioFile = 'ping.wav';
                 isStartSoundPlayed = true;
-            } else if (type === 'astaghfirullah') {
-                const audio = new Audio('Astaghfirullah.m4a');
-                audio.play();
-            } else if (type === 'alhamdulillah_score') {
-                const audio = new Audio('Alhamdulillah.m4a');
-                audio.play();
-            } else if (type === 'masyaallah') {
-                const audio = new Audio('Masya Allah 3.m4a');
+            } else if (type) { // For game over sounds based on score
+                audioFile = type;
+            }
+
+            if (audioFile) {
+                const audio = new Audio(audioFile);
                 audio.play();
             }
         }
@@ -675,20 +670,20 @@
             const skorAkhir = (skorBenar / totalSoal) * 100;
             let warnaSkor;
             let komentar;
-            let soundType;
+            let gameOverSoundFile;
 
             if (skorAkhir < 50) {
                 warnaSkor = "#FF0000";
                 komentar = "Semangat, belajar lagi ya!";
-                soundType = 'astaghfirullah';
+                gameOverSoundFile = 'Astaghfirullah.m4a';
             } else if (skorAkhir >= 50 && skorAkhir <= 84) {
                 warnaSkor = "#FF8C00";
                 komentar = "Score kamu lumayan...";
-                soundType = 'alhamdulillah_score';
+                gameOverSoundFile = 'Alhamdulillah.m4a';
             } else {
                 warnaSkor = "#00FF00";
                 komentar = "Kamu lumayan pinter yah...";
-                soundType = 'masyaallah';
+                gameOverSoundFile = 'Masya Allah 3.m4a';
             }
 
             document.getElementById("judulGame").textContent = "Permainan Selesai!";
@@ -699,7 +694,7 @@
             document.getElementById("pilihanGanda").innerHTML = "";
             document.getElementById("hasil").textContent = "";
             document.getElementById("timerContainer").style.display = "none";
-            playSound(soundType); // Memainkan suara berdasarkan score akhir
+            playSound('gameover', gameOverSoundFile); // Play game over sound based on score
         }
 
         document.getElementById("startButton").addEventListener("click", mulaiPermainan);
