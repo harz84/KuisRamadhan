@@ -673,17 +673,11 @@
             let gameOverSoundFile;
 
             if (skorAkhir < 50) {
-                warnaSkor = "#FF0000";
-                komentar = "Semangat, belajar lagi ya!";
-                gameOverSoundFile = 'Astaghfirullah.m4a';
+                gameOverSoundFile = 'ast.mp3';
             } else if (skorAkhir >= 50 && skorAkhir <= 84) {
-                warnaSkor = "#FF8C00";
-                komentar = "Score kamu lumayan...";
-                gameOverSoundFile = 'Alhamdulillah.m4a';
+                gameOverSoundFile = 'alh.mp3';
             } else {
-                warnaSkor = "#00FF00";
-                komentar = "Kamu lumayan pinter yah...";
-                gameOverSoundFile = 'Masya Allah 3.m4a';
+                gameOverSoundFile = 'masy.mp3';
             }
 
             document.getElementById("judulGame").textContent = "Permainan Selesai!";
