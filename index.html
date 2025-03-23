@@ -279,8 +279,8 @@
             position: absolute;
             top: 10px;
             right: 10px;
-            width: 100px; /* Sesuaikan ukuran animasi */
-            height: 100px; /* Sesuaikan ukuran animasi */
+            width: 80px; /* Diperkecil menjadi 80% */
+            height: 80px; /* Diperkecil menjadi 80% */
             display: none; /* Sembunyikan secara default */
         }
     </style>
@@ -442,7 +442,7 @@
                 const audio = new Audio('success.wav');
                 audio.play();
             } else if (type === 'fail') {
-                const audio = new Audio('gameover.wav');
+                const audio = new Audio('gameovertwew.wav'); // Ganti nama file suara disini
                 audio.play();
             } else if (type === 'gameover' && !isGameOverSoundPlayed) {
                 const audio = new Audio('alhamdulillah.mp3');
