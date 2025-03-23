@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Signika:wght@400;700&family=Kanit&family=Acme&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <script src="https://unpkg.com/tone"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script> <!-- Tambahkan library Lottie -->
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -131,6 +132,7 @@
             height: 100%;
             pointer-events: none;
             z-index: 1000;
+            display: none; /* Fireworks dihilangkan */
         }
 
         .firework {
@@ -272,6 +274,15 @@
             font-size: 14px;
             color: #F5E8C7; /* Krem, kontras dengan background hijau tua */
         }
+
+        #correctAnimation { /* Container untuk animasi Lottie */
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 100px; /* Sesuaikan ukuran animasi */
+            height: 100px; /* Sesuaikan ukuran animasi */
+            display: none; /* Sembunyikan secara default */
+        }
     </style>
 </head>
 <body>
@@ -293,7 +304,8 @@
             <button id="pilihanD"></button>
         </div>
         <p id="hasil"></p>
-        <div class="fireworks"></div>
+        <div class="fireworks"></div> <!-- Fireworks dihilangkan -->
+        <div id="correctAnimation"></div> <!-- Container untuk animasi Lottie -->
         <div id="skor" style="display: none;">
             Benar: <span id="skorBenar">0</span> / Salah: <span id="skorSalah">0</span>
         </div>
@@ -430,7 +442,7 @@
                 const audio = new Audio('success.wav');
                 audio.play();
             } else if (type === 'fail') {
-                const audio = new Audio('gameovertwew.wav');
+                const audio = new Audio('gameover.wav');
                 audio.play();
             } else if (type === 'gameover' && !isGameOverSoundPlayed) {
                 const audio = new Audio('alhamdulillah.mp3');
@@ -447,7 +459,7 @@
         function updateTimer() {
             let minutes = Math.floor(timeLeft / 60);
             let seconds = timeLeft % 60;
-            document.getElementById("timer").textContent = 
+            document.getElementById("timer").textContent =
                 `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
@@ -526,7 +538,7 @@
         function cekJawaban(jawabanYangDipilih, buttonElement) {
             if (jawabanYangDipilih === soalSaatIni.jawaban) {
                 document.getElementById("hasil").textContent = "Benar!";
-                triggerFireworks();
+                playCorrectAnimation(); // Ganti fireworks dengan animasi Lottie
                 playSound('success');
                 jawabanBenar = true;
                 skorBenar++;
@@ -568,7 +580,26 @@
             });
         }
 
-        function triggerFireworks() {
+        function playCorrectAnimation() {
+            const animationContainer = document.getElementById('correctAnimation');
+            animationContainer.style.display = 'block'; // Tampilkan container animasi
+
+            lottie.loadAnimation({
+                container: animationContainer,
+                renderer: 'svg',
+                loop: false,
+                autoplay: true,
+                path: 'correctan.json' // Path ke file JSON animasi Anda
+            });
+
+            // Sembunyikan animasi setelah selesai (sesuaikan durasi dengan animasi Anda)
+            setTimeout(() => {
+                animationContainer.style.display = 'none';
+                animationContainer.innerHTML = ''; // Bersihkan container untuk animasi berikutnya
+            }, 2000); // Misalnya, animasi selesai dalam 2 detik
+        }
+
+        function triggerFireworks() { // Fungsi fireworks dihilangkan
             const container = document.querySelector(".fireworks");
             const count = 20;
 
@@ -592,6 +623,7 @@
                 container.innerHTML = "";
             }, 2000);
         }
+
 
         function akhirPermainan() {
             const skorAkhir = (skorBenar / totalSoal) * 100;
