@@ -275,12 +275,21 @@
             color: #F5E8C7; /* Krem, kontras dengan background hijau tua */
         }
 
-        #correctAnimation { /* Container untuk animasi Lottie */
+        #correctAnimation { /* Container untuk animasi Lottie Benar */
             position: absolute;
             top: 10px;
             right: 10px;
             width: 80px; /* Diperkecil menjadi 80% */
             height: 80px; /* Diperkecil menjadi 80% */
+            display: none; /* Sembunyikan secara default */
+        }
+
+        #wrongAnimation { /* Container untuk animasi Lottie Salah */
+            position: absolute;
+            top: 10px;
+            right: 100px; /* Geser sedikit ke kanan dari correctAnimation */
+            width: 80px; /* Ukuran sama dengan correctAnimation */
+            height: 80px; /* Ukuran sama dengan correctAnimation */
             display: none; /* Sembunyikan secara default */
         }
     </style>
@@ -305,7 +314,8 @@
         </div>
         <p id="hasil"></p>
         <div class="fireworks"></div> <!-- Fireworks dihilangkan -->
-        <div id="correctAnimation"></div> <!-- Container untuk animasi Lottie -->
+        <div id="correctAnimation"></div> <!-- Container untuk animasi Lottie Benar -->
+        <div id="wrongAnimation"></div>   <!-- Container untuk animasi Lottie Salah -->
         <div id="skor" style="display: none;">
             Benar: <span id="skorBenar">0</span> / Salah: <span id="skorSalah">0</span>
         </div>
@@ -538,7 +548,7 @@
         function cekJawaban(jawabanYangDipilih, buttonElement) {
             if (jawabanYangDipilih === soalSaatIni.jawaban) {
                 document.getElementById("hasil").textContent = "Benar!";
-                playCorrectAnimation(); // Ganti fireworks dengan animasi Lottie
+                playCorrectAnimation(); // Putar animasi benar
                 playSound('success');
                 jawabanBenar = true;
                 skorBenar++;
@@ -554,6 +564,7 @@
                 }, 2000);
             } else {
                 document.getElementById("hasil").textContent = "Salah!";
+                playWrongAnimation(); // Putar animasi salah
                 playSound('fail');
                 buttonElement.classList.add("salah");
                 buttonElement.style.animationPlayState = 'running';
@@ -567,7 +578,7 @@
                         timerInterval = null;
                         akhirPermainan();
                     }
-                }, 500);
+                }, 2000); // Durasi animasi salah mungkin bisa lebih panjang dari benar
             }
         }
 
@@ -589,7 +600,7 @@
                 renderer: 'svg',
                 loop: false,
                 autoplay: true,
-                path: 'correctan.json' // Path ke file JSON animasi Anda
+                path: 'correctan.json' // Path ke file JSON animasi Benar
             });
 
             // Sembunyikan animasi setelah selesai (sesuaikan durasi dengan animasi Anda)
@@ -598,6 +609,26 @@
                 animationContainer.innerHTML = ''; // Bersihkan container untuk animasi berikutnya
             }, 2000); // Misalnya, animasi selesai dalam 2 detik
         }
+
+        function playWrongAnimation() {
+            const animationContainer = document.getElementById('wrongAnimation');
+            animationContainer.style.display = 'block'; // Tampilkan container animasi salah
+
+            lottie.loadAnimation({
+                container: animationContainer,
+                renderer: 'svg',
+                loop: false,
+                autoplay: true,
+                path: 'wrong.json' // Path ke file JSON animasi Salah
+            });
+
+            // Sembunyikan animasi setelah selesai (sesuaikan durasi dengan animasi Anda)
+            setTimeout(() => {
+                animationContainer.style.display = 'none';
+                animationContainer.innerHTML = ''; // Bersihkan container untuk animasi berikutnya
+            }, 2000); // Durasi animasi salah, sesuaikan jika perlu
+        }
+
 
         function triggerFireworks() { // Fungsi fireworks dihilangkan
             const container = document.querySelector(".fireworks");
