@@ -453,19 +453,18 @@
         let isGameOverSoundPlayed = false; // Kontrol suara alhamdulillah
 
         // Fungsi untuk memainkan suara
-        function playSound(type) {
+        function playSound(type, specificAudioFile) { // Tambahkan parameter specificAudioFile
             let audioFile;
             if (type === 'success') {
                 audioFile = 'success.wav';
             } else if (type === 'fail') {
                 audioFile = 'gameovertwew.wav';
-            } else if (type === 'gameover') {
-                // Do nothing here, sound is chosen in akhirPermainan
-                return;
             } else if (type === 'start' && !isStartSoundPlayed) {
                 audioFile = 'ping.wav';
                 isStartSoundPlayed = true;
-            } else if (type) { // For game over sounds based on score
+            } else if (type === 'gameover' && specificAudioFile) { // Gunakan specificAudioFile jika ada
+                audioFile = specificAudioFile;
+            } else if (type) { // Jika type adalah nama file langsung (untuk kasus lama mungkin)
                 audioFile = type;
             }
 
@@ -669,15 +668,21 @@
         function akhirPermainan() {
             const skorAkhir = (skorBenar / totalSoal) * 100;
             let warnaSkor;
-            let komentar;
+            let komentar = ""; // Inisialisasi komentar
             let gameOverSoundFile;
 
             if (skorAkhir < 50) {
                 gameOverSoundFile = 'ast.mp3';
+                komentar = "Belajar lagi ya....😊😁🤭";
+                warnaSkor = "#FF0000"; // Merah untuk kurang
             } else if (skorAkhir >= 50 && skorAkhir <= 84) {
                 gameOverSoundFile = 'alh.mp3';
+                komentar = "Mantap....🫶🏻";
+                warnaSkor = "#FFA500"; // Orange untuk cukup baik
             } else {
                 gameOverSoundFile = 'masy.mp3';
+                komentar = "Kamu Luar Biasa...👍🏻👍🏻👍🏻";
+                warnaSkor = "#008000"; // Hijau untuk luar biasa
             }
 
             document.getElementById("judulGame").textContent = "Permainan Selesai!";
